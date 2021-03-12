@@ -1,9 +1,13 @@
 import style from './style.scss';
+import html from './template.html';
 import { fromEvent, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, pluck } from 'rxjs/operators';
 import { TextFieldStore } from './text-field-store';
 
 type ValidationCallback = (input: string) => ValidationResult
+
+const template = document.createElement('template');
+template.innerHTML = `<style>${style}</style>${html}`;
 
 interface ValidationResult {
   isValid: boolean;
@@ -20,18 +24,12 @@ export class TextFieldElement extends HTMLElement {
     super();
 
     const shadowRoot = this.attachShadow({ mode: 'open' });
-
-    const label = document.createElement('label');
-
-    const styleElement = document.createElement('style');
-    styleElement.innerText = style;
-    const mainContainer = document.createElement('div');
-    mainContainer.className = 'main';
-    const inputContainer = document.createElement('div');
-    inputContainer.className = 'input';
-    const leadingSlot = document.createElement('slot');
-    leadingSlot.setAttribute('name', 'leading');
-    const input = document.createElement('input');
+    shadowRoot.appendChild(template.content.cloneNode(true));
+    const input = this.shadowRoot?.querySelector('input');
+    const inputContainer = this.shadowRoot?.querySelector<HTMLDivElement>('div.input');
+    if (!input || !inputContainer) {
+      return;
+    }
     this.subscription.add(fromEvent(input, 'focus').subscribe(() => this.localStore.setIsForcus(true)));
     this.subscription.add(fromEvent(input, 'blur').subscribe(() => this.localStore.setIsForcus(false)));
     this.subscription.add(fromEvent(inputContainer, 'click').subscribe(() => input.focus()));
@@ -40,23 +38,6 @@ export class TextFieldElement extends HTMLElement {
       debounceTime(500),
       distinctUntilChanged()
     ).subscribe(value => this.localStore.setValue(value)));
-    const trailingSlot = document.createElement('slot');
-    trailingSlot.setAttribute('name', 'trailing');
-    input.setAttribute('type', 'text');
-
-    inputContainer.appendChild(leadingSlot);
-    inputContainer.appendChild(input);
-    inputContainer.appendChild(trailingSlot);
-    mainContainer.appendChild(inputContainer);
-
-    const bottomContainer = document.createElement('div');
-    bottomContainer.className = 'bottom';
-
-    mainContainer.appendChild(bottomContainer);
-
-    shadowRoot.appendChild(styleElement);
-    shadowRoot.appendChild(label);
-    shadowRoot.appendChild(mainContainer);
 
     this.subscription.add(this.localStore.isForcus$.subscribe(isFocus => {
       if (isFocus) {
