@@ -1,0 +1,49 @@
+$px-1: .0625rem;
+$px-2: .125rem;
+$px-4: .25rem;
+$px-8: .5rem;
+$px-12: .75rem;
+$px-16: 1rem;
+
+:host {
+  display: flex;
+  flex-direction: column;
+}
+:host.label-align-left, :host.label-align-right {
+  flex-direction: row;
+  align-items: center;
+}
+label {
+  font-size: $px-12;
+  margin: 0 $px-8 0 0;
+}
+div.main {
+  display: flex;
+  flex-direction: column;
+}
+div.input {
+  // background-color: #f3f3f3;
+  padding: $px-8 $px-8 $px-8 $px-8;
+  display: flex;
+  flex-direction: row;
+  border: solid $px-1 #aaa;
+  border-radius: $px-2;
+}
+div.input:hover {
+  border: solid $px-1 #888;
+}
+div.input.focused {
+  border: solid $px-1 #55f;
+}
+input {
+  width: 100%;
+  border: none;
+  font-size: $px-16;
+}
+input:focus {
+  outline: none;
+}
+.placeholder {
+  color: #aaa;
+  font-size: $px-12;
+}

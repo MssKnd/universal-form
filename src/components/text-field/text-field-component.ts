@@ -1,13 +1,7 @@
+import style from './style.scss';
 import { fromEvent, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, pluck } from 'rxjs/operators';
 import { TextFieldStore } from './text-field-store';
-
-const PX_1 = '.0625rem';
-const PX_2 = '.125rem';
-const PX_4 = '.25rem';
-const PX_8 = '.5rem';
-const PX_12 = '.75rem';
-const PX_16 = '1rem';
 
 type ValidationCallback = (input: string) => ValidationResult
 
@@ -29,51 +23,8 @@ export class TextFieldElement extends HTMLElement {
 
     const label = document.createElement('label');
 
-    const style = document.createElement('style');
-    style.innerText = `
-    :host {
-      display: flex;
-      flex-direction: column;
-    }
-    :host.label-align-left, :host.label-align-right] {
-      flex-direction: row;
-      align-items: center;
-    }
-    label {
-      font-size: ${PX_12};
-      margin: 0 ${PX_8} 0 0;
-    }
-    div.main {
-      display: flex;
-      flex-direction: column;
-    }
-    div.input {
-      // background-color: #f3f3f3;
-      padding: ${PX_8} ${PX_8} ${PX_8} ${PX_8};
-      display: flex;
-      flex-direction: row;
-      border: solid ${PX_1} #aaa;
-      border-radius: ${PX_2};
-    }
-    div.input:hover {
-      border: solid ${PX_1} #888;
-    }
-    div.input.focused {
-      border: solid ${PX_1} #55f;
-    }
-    input {
-      width: 100%;
-      border: none;
-      font-size: ${PX_16};
-    }
-    input:focus {
-      outline: none;
-    }
-    .placeholder {
-      color: #aaa;
-      font-size: ${PX_12};
-    }
-    `.replace(/\n/g,'').trim();
+    const styleElement = document.createElement('style');
+    styleElement.innerText = style;
     const mainContainer = document.createElement('div');
     mainContainer.className = 'main';
     const inputContainer = document.createElement('div');
@@ -103,7 +54,7 @@ export class TextFieldElement extends HTMLElement {
 
     mainContainer.appendChild(bottomContainer);
 
-    shadowRoot.appendChild(style);
+    shadowRoot.appendChild(styleElement);
     shadowRoot.appendChild(label);
     shadowRoot.appendChild(mainContainer);
 

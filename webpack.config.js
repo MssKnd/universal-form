@@ -9,13 +9,31 @@ module.exports = {
     filename: "index.js"
   },
   module: {
-      rules: [
-        {
-          test: /\.ts$/,
-          use: 'ts-loader'
-        }
-      ]
-    },
+    rules: [
+      {
+        test: /.html$/i,
+        use: 'html-loader',
+      },
+      {
+        test: /.scss$/,
+        use: [
+            'raw-loader',
+            {
+                loader: 'sass-loader',
+                options: {
+                    sassOptions: {
+                       includePaths: [path.resolve(__dirname, 'node_modules')],
+                    }
+                }
+            }
+        ]
+      },
+      {
+        test: /\.ts$/,
+        use: 'ts-loader'
+      },
+    ]
+  },
   resolve: {
     modules: [
       "node_modules",
