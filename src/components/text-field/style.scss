@@ -5,6 +5,11 @@ $px-8: .5rem;
 $px-12: .75rem;
 $px-16: 1rem;
 
+$top-padding: $px-8;
+$bottom-padding: $px-8;
+$right-padding: $px-8;
+$left-padding: $px-8;
+
 :host {
   display: flex;
   flex-direction: column;
@@ -23,25 +28,39 @@ div.main {
 }
 div.input {
   // background-color: #f3f3f3;
-  padding: $px-8 $px-8 $px-8 $px-8;
+  padding: 0 $right-padding 0 $left-padding;
   display: flex;
   flex-direction: row;
+  align-items: center;
   border: solid $px-1 #aaa;
   border-radius: $px-2;
-}
-div.input:hover {
-  border: solid $px-1 #888;
-}
-div.input.focused {
-  border: solid $px-1 #55f;
+  box-shadow: 0 0 0 0 transparent;
+  transition: .1s;
+  &:hover {
+    border: solid $px-1 #888;
+  }
+  &.focused:not(.invalid) {
+    border: solid $px-1 #5071c8;
+    box-shadow: 0 0 $px-4 $px-1 #5071c8;
+  }
+  &.invalid {
+    border: solid $px-1 red;
+  }
+  & slot[name="leading"]::slotted(*) {
+    padding-right: $px-8;
+  }
+  & slot[name="trailing"]::slotted(*) {
+    padding-left: $px-8;
+  }
 }
 input {
   width: 100%;
   border: none;
   font-size: $px-16;
-}
-input:focus {
-  outline: none;
+  margin: $top-padding 0 $bottom-padding 0;
+  &:focus {
+    outline: none;
+  }
 }
 .placeholder {
   color: #aaa;
