@@ -47,10 +47,14 @@ div.input {
     border: solid $px-1 red;
   }
   & slot[name="leading"]::slotted(*) {
-    padding-right: $px-8;
+    padding: 0 $right-padding 0 $left-padding;
+    margin-left: -$left-padding;
+    user-select: none;
   }
   & slot[name="trailing"]::slotted(*) {
-    padding-left: $px-8;
+    padding: 0 $right-padding 0 $left-padding;
+    margin-right: -$left-padding;
+    user-select: none;
   }
 }
 input {

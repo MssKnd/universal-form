@@ -4,7 +4,8 @@ import { fromEvent, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged, pluck } from 'rxjs/operators';
 import { TextFieldStore } from './text-field-store';
 
-type ValidationCallback = (input: string) => ValidationResult
+type ValidationCallback = (input: string) => ValidationResult;
+const observedAttributes = ['label', 'name', 'disabled', 'required', 'readonly', 'label-align', 'placeholder'] as const;
 
 const template = document.createElement('template');
 template.innerHTML = `<style>${style}</style>${html}`;
@@ -40,7 +41,7 @@ export class TextFieldElement extends HTMLElement {
     ).subscribe(value => this.localStore.setValue(value)));
 
     this.subscription.add(this.localStore.isForcus$.subscribe(isFocus => {
-      if (isFocus) {
+      if (isFocus && !this.localStore.readonly) {
         inputContainer.classList.add('focused');
       } else {
         inputContainer.classList.remove('focused');
@@ -50,11 +51,11 @@ export class TextFieldElement extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['label', 'name', 'disabled', 'required', 'readonly', 'label-align', 'placeholder'];
+    return observedAttributes;
   }
 
-  attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null) {
-    console.log(name);
+  attributeChangedCallback(name: typeof observedAttributes[number], oldValue: string | null, newValue: string | null) {
+    console.log(name, oldValue == null, newValue == null);
     switch (name) {
       case 'name': {
         const label = this.shadowRoot?.querySelector('label');
@@ -65,21 +66,38 @@ export class TextFieldElement extends HTMLElement {
       }
       case 'label': {
         const label = this.shadowRoot?.querySelector('label');
-        if (label) {
-          label.innerText = newValue ?? '';
-        }
+        if (!label) break;
+        label.innerText = newValue ?? '';
         break;
       }
       case 'placeholder': {
-        const input = this.shadowRoot?.querySelector('input');
         const bottomContainer = this.shadowRoot?.querySelector('.bottom');
-        if (newValue) {
-          input?.setAttribute('placeholder', newValue);
-          const placeholder = document.createElement('span');
-          placeholder.className = 'placeholder';
-          placeholder.innerText = newValue;
-          bottomContainer?.appendChild(placeholder);
-        }
+        if (!newValue) break;
+        const placeholder = document.createElement('span');
+        placeholder.className = 'placeholder';
+        placeholder.innerText = newValue;
+        bottomContainer?.appendChild(placeholder);
+        break;
+      }
+      case 'required': {
+        this.localStore.setRequired(newValue != null);
+        const input = this.shadowRoot?.querySelector('input');
+        if (!input) break;
+        input.required = newValue != null;
+        break;
+      }
+      case 'disabled': {
+        this.localStore.setDisabled(newValue != null);
+        const input = this.shadowRoot?.querySelector('input');
+        if (!input) break;
+        input.disabled = newValue != null;
+        break;
+      }
+      case 'readonly': {
+        this.localStore.setReadonly(newValue != null);
+        const input = this.shadowRoot?.querySelector('input');
+        if (!input) break;
+        input.readOnly = newValue != null;
         break;
       }
       default:
